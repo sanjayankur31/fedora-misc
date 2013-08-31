@@ -72,7 +72,7 @@ CONTINENT_MAP = {'AP': 'AS', 'EU': 'EU', 'AD': 'EU', 'AE': 'EU', 'AF': 'AS', \
 
 group_list = ['ambassadors','freemedia','designteam','docs',\
               'docs-publishers','docs-writers','fi-apprentice',\
-              'freemedia','fedora-arm','l10n-commits','l10n-admin',\
+              'fedora-arm','l10n-commits','l10n-admin',\
               'l10n-editor','marketing','magazine','news','packager',\
               'provenpackager','proventesters','qa','sysadmin-accounts',\
               'sysasdmin-ask','sysadmin-badges','trigers','web',]
@@ -108,95 +108,37 @@ fields=['human_name', 'username', 'email', 'status', 'country_code'])
 
     # Get a list of people in the groups we care about
     for group_name in group_list:
-        print "Group: %s" % group_name
-
+        print "Getting list for group: %s" % group_name
         # Get the people from this group
         group_people = fas.group_members(group_name)
+
         #make a list of usernames of a group
         for person in group_people:
-
         # match our people list to all of FAS now
             for item in data.values():
                 user_name = item['username']
                 human_name = item['human_name']
                 country_code = item['country_code']
                 status = item['status']
-                email = item['username'] + '@fedoraproject.org'
+                #email = item['username'] + '@fedoraproject.org'
 
-                if person == user_name:
-                    if status == 'active': #filter out all inactive accounts
-                        if country_code is None or country_code == 'O1' \
-    or country_code == '  ':
-                            continent_code = 'Unknown'            
-                        else:
-                            continent_code = CONTINENT_MAP[country_code]
 
-                       #different values for blank or non-blank fields are
-                       #_____________________________________________________#
-                       # Country Code  || Human Name || Number of tickets||  #
-                       #_____________________________________________________#
-                       # None          || None/Name  ||  0/n                 #
-                       # '   '         || None/Name  ||                      #
-                       # 'IN','FR' etc.|| None/Name  ||                      #
-                       #_____________________________________________________#
+                if status == 'active':
+                    # It's 'oh', not zero!
+                    if country_code != None and country_code != 'O1' and country_code != '  ':
+                        continent_code = CONTINENT_MAP[country_code]
 
-                        if country_code is None:
-                            if human_name is None:
-                                flag = 1
-                            else:
-                                flag = 2
-                        elif country_code == '  ':
-                            if human_name is None:
-                                flag = 1
-                            else:
-                                flag = 2
-
-                        else: #if there is a country code available
-                            country = countries[country_code]
-                            if human_name is None:
-                                flag = 3
-                            else:
-                                flag = 4
-
-                        #check flag to decide o/p
-                        if flag == 1:
-                            entry = [user_name, user_name, 'Unknown', email, \
-    'Unknown']
-                            output.append(entry)
-                        elif flag == 2:
-                            entry = [user_name, human_name, 'Unknown', email, \
-    'Unknown']
-                            output.append(entry)
-                        elif flag == 3:
-                            entry = [user_name, user_name, country, email, \
-    continent_code]
-                            output.append(entry)
-                        else:
-                            entry = [user_name, human_name, country, email, \
-    continent_code]
-                            output.append(entry)
+                        if continent_code == 'AS' or continent_code == 'AU':
+                            if person['username'] == user_name:
+                                entry = [group_name, user_name, human_name, country_code]
+                                output.append(entry)
 
 # Now we have a output list like 
 #[['rdsharma4u', 'Ravi Datta Sharma','India','rdsharma4u@gmail.com','1','AS'],
 #['red', 'Sandro Mathys', 'Switzerland', 'sm@sandro-mathys.ch', '10', 'EU']]
 
-    for item in output:
-        #break
-        continent_code = item[4]
-        if continent_code == 'AS' or continent_code == 'AU':
-            final_output_list_as.append(item)
-        elif continent_code == 'NA':
-            final_output_list_na.append(item)
-        elif continent_code == 'SA':
-            final_output_list_latam.append(item)
-        elif continent_code == 'EU':
-            final_output_list_eu.append(item)
-        elif continent_code == 'AF':
-            final_output_list_africa.append(item)
-        elif continent_code == 'Unknown':
-            final_output_list_unknown.append(item)
-
-    print final_output_list_as
+    for person in output:
+        print ("%s: %s - %s" % (person[0], person[1], person[2]))
 
 if __name__ == "__main__":
     calc_list()
