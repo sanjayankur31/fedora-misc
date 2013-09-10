@@ -2,7 +2,7 @@
 ''' This script is for generating an APAC report'''
 
 #
-# Copyright (C) 2010, Susmit Shannigrahi, Susmit AT fedoraproject DOT org
+# Copyright (C) 2013, Ankur Sinha
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

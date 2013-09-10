@@ -2,7 +2,7 @@
 ''' This script is for generating an APAC report'''
 
 #
-# Copyright (C) 2010, Susmit Shannigrahi, Susmit AT fedoraproject DOT org
+# Copyright (C) 2013, Ankur Sinha
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -105,11 +105,14 @@ def calc_list():
 'SA' : 'LATAM', 'AF' : 'Africa', 'EU' : 'EMEA', 'Unknown' : 'Unknown'}
 
 
-    #username = 'fas'
+    #username = 'username'
     #password = 'password'
-    username = raw_input('Username: ').strip()
-    password = getpass.getpass('Password: ')    
+    #username = raw_input('Username: ').strip()
+    #password = getpass.getpass('Password: ')    
     fas = AccountSystem(username=username, password=password)
+
+
+    log = open('output-log.txt','w')
 
     # Get a dictinary of all people in FAS
     data = fas.people_by_key(key='id', search=u'*', \
@@ -117,7 +120,7 @@ fields=['human_name', 'username', 'email', 'status', 'country_code', 'last_seen'
 
     # Get a list of people in the groups we care about
     for group_name in group_list:
-        print "Getting list for group: %s" % group_name
+        log.write ("Getting list for group: %s\n" % group_name)
         # Get the people from this group
         group_people = fas.group_members(group_name)
 
@@ -139,7 +142,7 @@ fields=['human_name', 'username', 'email', 'status', 'country_code', 'last_seen'
                         continent_code = CONTINENT_MAP[country_code]
 
                         if person['username'] == user_name:
-                            entry = [group_name, user_name, human_name,
+                            entry = [group_name, user_name, 
                                      country_code, last_seen]
                             if continent_code == 'AS' or continent_code == 'AU':
                                 apac_list.append(entry)
@@ -153,12 +156,13 @@ fields=['human_name', 'username', 'email', 'status', 'country_code', 'last_seen'
                                 emea_list.append(entry)
                             else:
                                 unknown_list.append(entry)
+
                 else:
                     if country_code != None and country_code != 'O1' and country_code != '  ':
                         continent_code = CONTINENT_MAP[country_code]
 
                         if person['username'] == user_name:
-                            entry = [group_name, user_name, human_name,
+                            entry = [group_name, user_name,
                                      country_code, last_seen]
                             inactive_list.append(entry)
 
@@ -166,32 +170,26 @@ fields=['human_name', 'username', 'email', 'status', 'country_code', 'last_seen'
 #[['rdsharma4u', 'Ravi Datta Sharma','India','rdsharma4u@gmail.com','1','AS'],
 #['red', 'Sandro Mathys', 'Switzerland', 'sm@sandro-mathys.ch', '10', 'EU']]
 
-    print ("ACTIVE CONTRIBUTORS LIST:")
-    print ("** APAC **")
+    log.write ("ACTIVE CONTRIBUTORS LIST:\n")
+    log.write ("** APAC **\n")
     for person in apac_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
-    print ("** NA **")
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
+    log.write ("** NA **\n")
     for person in na_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
-    print ("** LATAM **")
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
+    log.write ("** LATAM **\n")
     for person in latam_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
-    print ("** Africa **")
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
+    log.write ("** Africa **\n")
     for person in africa_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
-    print ("** EMEA **")
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
+    log.write ("** EMEA **\n")
     for person in emea_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
 
-    print ("INACTIVE CONTRIBUTORS LIST:")
+    log.write ("INACTIVE CONTRIBUTORS LIST:")
     for person in inactive_list:
-        print ("%s: %s - %s FROM %s last seen on %s" % (person[0], person[1], person[2], person[3],
-                                person[4].ctime()))
+        log.write ("%s: - %s FROM %s last seen on %s\n" % (person[0], person[1], person[2], person[3] ))
 
 if __name__ == "__main__":
     calc_list()
